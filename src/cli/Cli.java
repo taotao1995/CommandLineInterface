@@ -12,15 +12,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.*;
+
 
 import cli.Plant.PlantBuilder;
 
@@ -35,10 +31,13 @@ public class Cli {
 	private static final int LIMIT = 0 ;
 	private static String dirPath = "./Resource";  
 	private static File[] InputFiles;
+	private static ArrayList<Integer> colNumList = new ArrayList<Integer>();
 	private static List<Plant> plantList = new ArrayList<Plant>();
+	private static List<Plant> topResults = new ArrayList<Plant>();
 	private static String FIRST_LINE_IN_CSV;
 	private static String[] FIRST_LINE_CELLS;
-	private static Method[] METHODS_IN_ORDER;
+	private static Method[] BUILDER_METHODS_IN_ORDER;
+	private static Method[] PLANT_METHODS_IN_ORDER;
 	
 	
 	
@@ -53,6 +52,60 @@ public class Cli {
 
 		for( File inputFile : InputFiles ) {
 			setPlantList(inputFile);
+		}
+		
+		//options in command line
+		Options options = new Options();
+		Option opt = new Option("h", "help", false,"Print help");
+		opt.setRequired(false);
+		options.addOption(opt);
+		
+		for(int m = 0; m < FIRST_LINE_CELLS.length; m++){
+			Option option = new Option("eh"+m,""+m,false,"return top 3 results from the specified column");
+			option.setRequired(false);
+			options.addOption(option);
+		}
+		
+
+		
+		
+		CommandLineParser parser = new DefaultParser();
+//      CommandLineParser parser = new GnuParser ();
+//      CommandLineParser parser = new PosixParser();
+
+		try {
+			//get the options to see what columns in csv need to be sorted, store in the colNumList.
+			CommandLine cmd = parser.parse( options, args);
+			System.out.println("please type -eh followed by a number to get the columns.eg. -eh2 -eh4");
+	
+			Option[] opts = cmd.getOptions();
+			
+            if (opts != null) {
+            	for (Option opt1 : opts) {
+            	String name = opt1.getLongOpt();
+            	int colNum = Integer.parseInt(name);
+            	colNumList.add(colNum);
+            	}
+            }
+            
+            PLANT_METHODS_IN_ORDER = getOrderedMethods(Plant.class);
+            for(int col : colNumList) {
+            	// sort all columns to get the top 3 values from each column, and compare again to get the top 3 values out of all columns
+            	// get the final rows , and return all values in the row for each column.
+            	
+            	//sort all columns to get the top 3 values from each column
+            	//get the final rows, and compare again to get the top 3 values of sum out for all columns.
+
+            	//top3 = sort(col);
+            	
+            	sort(col);
+            	
+            	
+            	
+            }
+            
+		}catch(ParseException e) {
+			e.printStackTrace();
 		}
 		
 
@@ -84,7 +137,7 @@ public class Cli {
 	    	  //read the first line for use in mapToItem function.
 	    	  FIRST_LINE_IN_CSV = br.readLine();
 	    	  FIRST_LINE_CELLS = FIRST_LINE_IN_CSV .split(COMMA);
-	    	  METHODS_IN_ORDER = getParameterOrder();
+	    	  //BUILDER_METHODS_IN_ORDER = getOrderedMethods(PlantBuilder.class);
 	    	  
 	    	  plantList = br.lines().skip(1).map(mapToItem).collect(Collectors.toList());
 	      //if we have read any file, add new list items after plantList
@@ -98,6 +151,81 @@ public class Cli {
 		
 		return plantList;
 	}
+	
+	
+	
+	
+	public static Method[] getOrderedMethods(Class cl) {
+		  // Java reflection to get methods matching csv header order.
+		  Method[] methods = cl.getDeclaredMethods();
+		  Method[] tmpMds = new Method[FIRST_LINE_CELLS.length];
+		  for(Method m : methods) {
+			  String mdName = m.getName();
+			  String tmpName = mdName.toLowerCase();
+			  //only if the method names are not called access$
+			  if(!mdName.contains("access")) {
+				  //System.out.println(mdName);
+				  for(int i = 0; i < FIRST_LINE_CELLS.length; i ++) {
+					  String parameterName;
+					  if(FIRST_LINE_CELLS[i].contains("_")) {
+						  parameterName = FIRST_LINE_CELLS[i].substring(0,FIRST_LINE_CELLS[i].indexOf("_")).toLowerCase();
+						  
+					  }else {
+						  parameterName = FIRST_LINE_CELLS[i].toLowerCase();
+					  }
+					  
+					  if(tmpName.contains(parameterName)){
+						  // return methods in ordered list, eg. add setColumn method to pos17 if a match is found.
+						  tmpMds[i] = m;
+					  }
+				 }
+			}	   
+		  }
+		  return tmpMds;
+		}
+		
+		public static List<Plant> sort(int num) {
+			Method m = PLANT_METHODS_IN_ORDER[num];
+			if(! hasNumParameter(m.getName())){
+				System.out.println("Sorry we cant sort on this column of strings, please change to another column of numbers");
+			};
+			
+			for(Plant pl : plantList) {
+				try {
+					m.invoke(pl);
+				} catch (IllegalAccessException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IllegalArgumentException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (InvocationTargetException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			return null;
+			
+			
+		}
+		
+		
+		public static boolean hasNumParameter(String methodName) {
+			switch(methodName) {
+			case("getGid"):
+			case("getDesignation"):
+			case("getPlantingDate"):
+			case("getEntryType"):
+				return false;
+			default:
+				return true;
+			}
+
+		
+		
+		
+		}
+
 	
 
 	/**
@@ -177,35 +305,5 @@ public class Cli {
 		
 	};
 	
-	
-	public static Method[] getParameterOrder() {
-	  // Java reflection to get methods matching csv header order.
-	  Method[] methods = PlantBuilder.class.getDeclaredMethods();
-	  Method[] tmpMds = new Method[FIRST_LINE_CELLS.length];
-	  for(Method m : methods) {
-		  String mdName = m.getName();
-		  String tmpName = mdName.toLowerCase();
-		  //only if the method names are not called access$
-		  if(mdName.contains("access") == false) {
-			  for(int i = 0; i < FIRST_LINE_CELLS.length; i ++) {
-				  String parameterName;
-				  if(FIRST_LINE_CELLS[i].contains("_")) {
-					  parameterName = FIRST_LINE_CELLS[i].substring(0,FIRST_LINE_CELLS[i].indexOf("_")).toLowerCase();
-					  
-				  }else {
-					  parameterName = FIRST_LINE_CELLS[i].toLowerCase();
-				  }
-				  
-				  if(tmpName.contains(parameterName)){
-					  tmpMds[i] = m;
-				  }
-			 }
-		}	   
-	  }
-	  return tmpMds;
-	}
-	
-	
-	
-	
+
 }
