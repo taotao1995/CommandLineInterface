@@ -1,0 +1,7 @@
+To run this program:
+
+In eclipse:
+Run as -> Run configurations -> Arguments
+
+type "-h" to get help.
+type "-eh2" to get top 3 results sorted from column 2 value 
