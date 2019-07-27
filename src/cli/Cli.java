@@ -13,9 +13,12 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import java.lang.reflect.Method;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
@@ -30,9 +33,14 @@ import cli.Plant.PlantBuilder;
 public class Cli {
 	private static final String COMMA = ",";
 	private static final int LIMIT = 0 ;
-	static private String dirPath = "./Resource";  
-	static private File[] InputFiles;
-	static private List<Plant> plantList = new ArrayList<Plant>();
+	private static String dirPath = "./Resource";  
+	private static File[] InputFiles;
+	private static List<Plant> plantList = new ArrayList<Plant>();
+	private static String FIRST_LINE_IN_CSV;
+	private static String[] FIRST_LINE_CELLS;
+	private static Method[] METHODS_IN_ORDER;
+	
+	
 	
 	
 	/**
@@ -46,6 +54,7 @@ public class Cli {
 		for( File inputFile : InputFiles ) {
 			setPlantList(inputFile);
 		}
+		
 
 	}
 	
@@ -72,6 +81,11 @@ public class Cli {
 	      BufferedReader br = new BufferedReader(new InputStreamReader(in));
 	      //if we have not read a file, generate plantList
 	      if(plantList != null) {
+	    	  //read the first line for use in mapToItem function.
+	    	  FIRST_LINE_IN_CSV = br.readLine();
+	    	  FIRST_LINE_CELLS = FIRST_LINE_IN_CSV .split(COMMA);
+	    	  METHODS_IN_ORDER = getParameterOrder();
+	    	  
 	    	  plantList = br.lines().skip(1).map(mapToItem).collect(Collectors.toList());
 	      //if we have read any file, add new list items after plantList
 	      }else {
@@ -97,7 +111,24 @@ public class Cli {
 		try {
 		// Lambda expression feature in java 8, read in a line and seperate the line into cells of different data types.
 	  String[] cells =  line.split(COMMA, LIMIT);// a CSV has comma separated lines
+	  
+	  //TODO - prepare cells as parameters 
+	//	  for(int j=0;j<cells.length;j++) {
+	//		  if(j == 0||1||2||3) {
+	//		  cells[j] = cells[j].isEmpty() ?  null : cells[j];
+	//		  }else if(j== 5||6||9){
+	//			 cells[j] = cells[5].isEmpty() ? null: Float.parseFloat(cells[j]);
+	//		  }else {
+	//			  cells[j] = cells[5].isEmpty() ? null: Integer.parseInt(cells[j]);
+	//		  }
+	//	  }
 		  
+	  
+	  //TODO - invoke methods for the plantBuilder object
+	//	  	PlantBuilder builder = new Plant.PlantBuilder();
+	//		  for(Method m : METHODS_IN_ORDER) {
+	//			  m.invoke(builder,parameters); 
+	//		  }
 	  
 	  plant = new Plant.PlantBuilder()
 		  // if the cell is not empty, set the plant data.
@@ -145,5 +176,36 @@ public class Cli {
 		return plant;
 		
 	};
+	
+	
+	public static Method[] getParameterOrder() {
+	  // Java reflection to get methods matching csv header order.
+	  Method[] methods = PlantBuilder.class.getDeclaredMethods();
+	  Method[] tmpMds = new Method[FIRST_LINE_CELLS.length];
+	  for(Method m : methods) {
+		  String mdName = m.getName();
+		  String tmpName = mdName.toLowerCase();
+		  //only if the method names are not called access$
+		  if(mdName.contains("access") == false) {
+			  for(int i = 0; i < FIRST_LINE_CELLS.length; i ++) {
+				  String parameterName;
+				  if(FIRST_LINE_CELLS[i].contains("_")) {
+					  parameterName = FIRST_LINE_CELLS[i].substring(0,FIRST_LINE_CELLS[i].indexOf("_")).toLowerCase();
+					  
+				  }else {
+					  parameterName = FIRST_LINE_CELLS[i].toLowerCase();
+				  }
+				  
+				  if(tmpName.contains(parameterName)){
+					  tmpMds[i] = m;
+				  }
+			 }
+		}	   
+	  }
+	  return tmpMds;
+	}
+	
+	
+	
 	
 }
