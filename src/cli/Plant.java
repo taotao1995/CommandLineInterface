@@ -1,10 +1,10 @@
 package cli;
 
 public class Plant {
-	// Use int instead of integer for less overhead.
-	private int entryNo,DTA,DTS,GW,earHvst,Rlodg,Slodg,repNo,plotNo,column,row;
+	// Use Integer than int for null or " " values
+	private Integer entryNo,DTA,DTS,GW,earHvst,Rlodg,Slodg,repNo,plotNo,column,row;
 	private String gid,designation,plantingDate,entryType;
-	private float EH, PH,MOI;
+	private Float EH, PH,MOI;
 
 	
 	/**
@@ -40,10 +40,10 @@ public class Plant {
 	 * @param gid
 	 * @return
 	 */
-	public String getGid(String gid) {
-		if(this.gid != null)
-			return this.gid;
-		else return null;
+	public String getGid() {
+		
+		return this.gid;
+		
 	}
 	
 	
@@ -52,10 +52,10 @@ public class Plant {
 	 * @param gid
 	 * @return
 	 */
-	public String getPlantingDate(String gid) {
-		if(this.gid == gid)
-			return this.plantingDate;
-		else return null;
+	public String getPlantingDate() {
+
+		return this.plantingDate;
+
 	}
 	
 
@@ -64,35 +64,10 @@ public class Plant {
 	 * @param gid
 	 * @return
 	 */
-	public String getEntryType(String gid) {
-		if(this.gid == gid)
-			return this.entryType;
-		else return null;
-	}
-	
+	public String getEntryType() {
 
-	
-	/**
-	 * 
-	 * @param gid
-	 * @return
-	 */
-	public String getDesignation(String gid) {
-		if(this.gid == gid)
-			return this.designation;
-		else return null;
-	}
-	
-	
-	/**
-	 * 
-	 * @param gid
-	 * @return
-	 */
-	public int getEntryNo(String gid) {
-		if(this.gid == gid)
-			return this.entryNo;
-		else return -1;
+		return this.entryType;
+
 	}
 	
 
@@ -102,10 +77,8 @@ public class Plant {
 	 * @param gid
 	 * @return
 	 */
-	public float getEH(String gid) {
-		if(this.gid == gid)
-			return this.EH;
-		else return -1;
+	public String getDesignation() {
+		return this.designation;
 	}
 	
 	
@@ -114,10 +87,10 @@ public class Plant {
 	 * @param gid
 	 * @return
 	 */
-	public float getPH(String gid) {
-		if(this.gid == gid)
-			return this.PH;
-		else return -1;
+	public Integer getEntryNo() {
+
+		return this.entryNo;
+
 	}
 	
 
@@ -127,10 +100,22 @@ public class Plant {
 	 * @param gid
 	 * @return
 	 */
-	public int getDTA(String gid) {
-		if(this.gid == gid)
-			return this.DTA;
-		else return -1;
+	public Float getEH() {
+
+		return this.EH;
+
+	}
+	
+	
+	/**
+	 * 
+	 * @param gid
+	 * @return
+	 */
+	public Float getPH() {
+
+		return this.PH;
+
 	}
 	
 
@@ -140,10 +125,10 @@ public class Plant {
 	 * @param gid
 	 * @return
 	 */
-	public int getDTS(String gid) {
-		if(this.gid == gid)
-			return this.DTS;
-		else return -1;
+	public Integer getDTA() {
+
+		return this.DTA;
+
 	}
 	
 
@@ -153,10 +138,10 @@ public class Plant {
 	 * @param gid
 	 * @return
 	 */
-	public float getMOI(String gid) {
-		if(this.gid == gid)
-			return this.MOI;
-		else return -1;
+	public Integer getDTS() {
+
+		return this.DTS;
+
 	}
 	
 
@@ -166,10 +151,10 @@ public class Plant {
 	 * @param gid
 	 * @return
 	 */
-	public int getGW(String gid) {
-		if(this.gid == gid)
-			return this.GW;
-		else return -1;
+	public Float getMOI() {
+
+		return this.MOI;
+
 	}
 	
 
@@ -179,10 +164,10 @@ public class Plant {
 	 * @param gid
 	 * @return
 	 */
-	public int getEarHvst(String gid) {
-		if(this.gid == gid)
-			return this.earHvst;
-		else return -1;
+	public Integer getGW() {
+
+		return this.GW;
+
 	}
 	
 
@@ -192,10 +177,10 @@ public class Plant {
 	 * @param gid
 	 * @return
 	 */
-	public int getRlodg(String gid) {
-		if(this.gid == gid)
-			return this.Rlodg;
-		else return -1;
+	public Integer getEarHvst() {
+
+		return this.earHvst;
+
 	}
 	
 
@@ -205,10 +190,10 @@ public class Plant {
 	 * @param gid
 	 * @return
 	 */
-	public int getSlodg(String gid) {
-		if(this.gid == gid)
-			return this.Slodg;
-		else return -1;
+	public Integer getRlodg() {
+
+		return this.Rlodg;
+
 	}
 	
 
@@ -218,10 +203,10 @@ public class Plant {
 	 * @param gid
 	 * @return
 	 */
-	public int getRepNo(String gid) {
-		if(this.gid == gid)
-			return this.repNo;
-		else return -1;
+	public Integer getSlodg() {
+
+		return this.Slodg;
+
 	}
 	
 
@@ -231,10 +216,10 @@ public class Plant {
 	 * @param gid
 	 * @return
 	 */
-	public int getPlotNo(String gid) {
-		if(this.gid == gid)
-			return this.plotNo;
-		else return -1;
+	public Integer getRepNo() {
+
+		return this.repNo;
+
 	}
 	
 
@@ -244,10 +229,10 @@ public class Plant {
 	 * @param gid
 	 * @return
 	 */
-	public int getColumn(String gid) {
-		if(this.gid == gid)
-			return this.column;
-		else return -1;
+	public Integer getPlotNo() {
+
+		return this.plotNo;
+
 	}
 	
 
@@ -257,10 +242,23 @@ public class Plant {
 	 * @param gid
 	 * @return
 	 */
-	public int getRow(String gid) {
-		if(this.gid == gid)
-			return this.row;
-		else return -1;
+	public Integer getColumn() {
+
+		return this.column;
+
+	}
+	
+
+	
+	/**
+	 * 
+	 * @param gid
+	 * @return
+	 */
+	public Integer getRow() {
+
+		return this.row;
+
 	}
 	
 	
@@ -270,10 +268,11 @@ public class Plant {
 		 * also it is safer than java beans at multi-thread environment.
 		 * Use static inner class for better access
 		 */
-
-		private int entryNo,DTA,DTS,GW,earHvst,Rlodg,Slodg,repNo,plotNo,column,row;
+		
+		//private static Integer count = 0; // count is used to calculate how many functions are called on the object, so we dont need to pass real numbers.
+		private Integer entryNo,DTA,DTS,GW,earHvst,Rlodg,Slodg,repNo,plotNo,column,row;
 		private String gid,designation,plantingDate,entryType;
-		private float EH, PH,MOI;
+		private Float EH, PH,MOI;
 		
 		/**
 		 * 
@@ -316,7 +315,7 @@ public class Plant {
 		 * 
 		 * @param entryNo
 		 */
-		public PlantBuilder setEntryNo(final int entryNo) {
+		public PlantBuilder setEntryNo(final Integer entryNo) {
 			this.entryNo = entryNo;
 			return this;
 		}
@@ -325,7 +324,7 @@ public class Plant {
 		 * 
 		 * @param EH
 		 */
-		public PlantBuilder setEH(final float EH) {
+		public PlantBuilder setEH(final Float EH) {
 			this.EH = EH;
 			return this;
 		}
@@ -335,7 +334,7 @@ public class Plant {
 		 * 
 		 * @param PH
 		 */
-		public PlantBuilder setPH(final float PH) {
+		public PlantBuilder setPH(final Float PH) {
 			this.PH = PH;
 			return this;
 		}
@@ -344,7 +343,7 @@ public class Plant {
 		 * 
 		 * @param DTA
 		 */
-		public PlantBuilder setDTA(final int DTA) {
+		public PlantBuilder setDTA(final Integer DTA) {
 			this.DTA = DTA;
 			return this;
 		}
@@ -353,7 +352,7 @@ public class Plant {
 		 * 
 		 * @param DTS
 		 */
-		public PlantBuilder setDTS(final int DTS) {
+		public PlantBuilder setDTS(final Integer DTS) {
 			this.DTS = DTS;
 			return this;
 		}
@@ -363,7 +362,7 @@ public class Plant {
 		 * 
 		 * @param MOI
 		 */
-		public PlantBuilder setMOI(final float MOI) {
+		public PlantBuilder setMOI(final Float MOI) {
 			this.MOI = MOI;
 			return this;
 		}
@@ -372,7 +371,7 @@ public class Plant {
 		 * 
 		 * @param GW
 		 */
-		public PlantBuilder setGW(final int GW) {
+		public PlantBuilder setGW(final Integer GW) {
 			this.GW = GW;
 			return this;
 		}
@@ -382,7 +381,7 @@ public class Plant {
 		 * 
 		 * @param earHvst
 		 */
-		public PlantBuilder setEarHvst(final int earHvst) {
+		public PlantBuilder setEarHvst(final Integer earHvst) {
 			this.earHvst = earHvst;
 			return this;
 		}
@@ -391,7 +390,7 @@ public class Plant {
 		 * 
 		 * @param Rlodg
 		 */
-		public PlantBuilder setRlodg(final int Rlodg ) {
+		public PlantBuilder setRlodg(final Integer Rlodg ) {
 			this.Rlodg = Rlodg;
 			return this;
 		}
@@ -400,7 +399,7 @@ public class Plant {
 		 * 
 		 * @param Slog
 		 */
-		public PlantBuilder setSlodg(final int Slog) {
+		public PlantBuilder setSlodg(final Integer Slog) {
 			this.Slodg = Slodg;
 			return this;
 		}
@@ -409,7 +408,7 @@ public class Plant {
 		 * 
 		 * @param repNo
 		 */
-		public PlantBuilder setRepNo(final int repNo) {
+		public PlantBuilder setRepNo(final Integer repNo) {
 			this.repNo = repNo;
 			return this;
 		}
@@ -418,7 +417,7 @@ public class Plant {
 		 * 
 		 * @param plotNo
 		 */
-		public PlantBuilder setPlotNo(final int plotNo) {
+		public PlantBuilder setPlotNo(final Integer plotNo) {
 			this.plotNo = plotNo;
 			return this;
 		}
@@ -427,7 +426,7 @@ public class Plant {
 		 * 
 		 * @param column
 		 */
-		public PlantBuilder setColumn(final int column) {
+		public PlantBuilder setColumn(final Integer column) {
 			this.column = column;
 			return this;
 		}
@@ -436,11 +435,25 @@ public class Plant {
 		 * 
 		 * @param row
 		 */
-		public PlantBuilder setRow(final int row) {
+		public PlantBuilder setRow(final Integer row) {
 			this.row = row;
 			return this;
 		}
 		
+		
+//		public PlantBuilder addCount() {
+//				count += 1;
+//				return this;
+//		}
+		
+		
+//		public static Integer getCount() {
+//			return count;
+//		}
+//		
+//		public static void resetCount() {
+//			count = 0;
+//		}
 		
 		public Plant build() {
 			return new Plant(this);
