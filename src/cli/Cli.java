@@ -9,13 +9,19 @@ import java.io.FilenameFilter;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import org.apache.commons.cli.*;
+import org.apache.commons.lang3.ArrayUtils;
+
 
 
 import cli.Plant.PlantBuilder;
@@ -33,11 +39,16 @@ public class Cli {
 	private static File[] InputFiles;
 	private static ArrayList<Integer> colNumList = new ArrayList<Integer>();
 	private static List<Plant> plantList = new ArrayList<Plant>();
-	private static List<Plant> topResults = new ArrayList<Plant>();
 	private static String FIRST_LINE_IN_CSV;
 	private static String[] FIRST_LINE_CELLS;
 	private static Method[] BUILDER_METHODS_IN_ORDER;
 	private static Method[] PLANT_METHODS_IN_ORDER;
+	// use float for quick sort, which can include both integer and float.
+	private static Map<Key, Float> map = new LinkedHashMap<Key, Float>();
+	private final static int TOP_RESULT_NUM = 3;
+	private static Key[] allResults;
+	private static Key[] allTopResults;
+
 	
 	
 	
@@ -76,7 +87,7 @@ public class Cli {
 		try {
 			//get the options to see what columns in csv need to be sorted, store in the colNumList.
 			CommandLine cmd = parser.parse( options, args);
-			System.out.println("please type -eh followed by a number to get the columns.eg. -eh2 -eh4");
+			//System.out.println("please type -eh followed by a number to get the columns.eg. -eh2 -eh4");
 	
 			Option[] opts = cmd.getOptions();
 			
@@ -90,24 +101,36 @@ public class Cli {
             
             PLANT_METHODS_IN_ORDER = getOrderedMethods(Plant.class);
             for(int col : colNumList) {
-            	// sort all columns to get the top 3 values from each column, and compare again to get the top 3 values out of all columns
-            	// get the final rows , and return all values in the row for each column.
-            	
-            	//sort all columns to get the top 3 values from each column
-            	//get the final rows, and compare again to get the top 3 values of sum out for all columns.
-
-            	//top3 = sort(col);
-            	
-            	sort(col);
-            	
-            	
+        	/* sort all columns to get the top 3 values from each column, and compare again to get the top 3 values out of all columns
+        	 * get the final rows , and return all values in the row for each column.
+        	 * sort all columns to get the top 3 values from each column
+        	 * get the final rows, and compare again to get the top 3 values of sum out for all columns.
+        	 */	
+            	sort(col);      
             	
             }
             
-		}catch(ParseException e) {
+        	QuickSort qs = new QuickSort();
+			Key[] finalTopResults = qs.getTopResults(allTopResults, TOP_RESULT_NUM);
+			Key[] restTopResults = Arrays.copyOfRange(allTopResults,0,TOP_RESULT_NUM);
+			
+			
+//			for(Key k1 : finalTopResults) {
+//				for(Key k2: restTopResults) {
+//					for(Key k3: allResults) {
+//						if(k3.getColumn() == k1.getColumn() && k3.getRow() == k1.getRow()) {
+//							System.out.println("output");
+//							System.out.println("- row: "+ k1.getRow());
+//							System.out.println("  column: "+ k1.getColumn());		
+//							System.out.println("  data: eh"+ k1.getRealCol()+"="+ k1.getValue()+ " eh"+ k2.getRealCol()+"=" + k3.getValue() );
+//					}
+//				}
+//			}
+//		}
+            
+		}catch(Exception e) {
 			e.printStackTrace();
 		}
-		
 
 	}
 	
@@ -184,30 +207,65 @@ public class Cli {
 		  return tmpMds;
 		}
 		
-		public static List<Plant> sort(int num) {
-			Method m = PLANT_METHODS_IN_ORDER[num];
-			if(! hasNumParameter(m.getName())){
-				System.out.println("Sorry we cant sort on this column of strings, please change to another column of numbers");
-			};
+		public static void sort(int num) {
+			Method method = PLANT_METHODS_IN_ORDER[num];
+			Key[] keys = null;
+			ArrayList<Key> keysArrayList = new ArrayList<Key>();
 			
-			for(Plant pl : plantList) {
-				try {
-					m.invoke(pl);
-				} catch (IllegalAccessException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IllegalArgumentException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (InvocationTargetException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+			if(! hasNumParameter(method.getName())){
+				System.out.println("Sorry we cant sort on this column of strings, please change to another column of numbers");
+			}else{
+			
+				for(Plant pl : plantList) {
+					try {
+						//for each plant, run the method on plant to get a value, eg. getEntryNo
+						Float value;
+						if(method.invoke(pl) == null)
+							value = (float) -1.0;
+						else
+							value = Float.parseFloat(method.invoke(pl).toString());
+						int rowNum = pl.getRow();
+						//System.out.println(rowNum);
+						int colNum = pl.getColumn();
+						//System.out.println(colNum);
+						//int index = plantList.indexOf(pl);
+						//System.out.println(index);
+						
+						keysArrayList.add(new Key(rowNum,colNum).setValue(value == null ? null : value));
+						
+					} catch (IllegalAccessException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (IllegalArgumentException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (InvocationTargetException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
+				
+				QuickSort qs = new QuickSort();
+				
+				keys = qs.getIntialArray(keysArrayList);
+				//System.out.println(keys.length);
+				qs.sort(keys, 0, keys.length-1);
+
+				allResults = ArrayUtils.addAll(allResults,keys);
+				
+				Key[] TopResultsForSingleMethod = qs.getTopResults(keys, TOP_RESULT_NUM);
+				//set eh number for key.
+				for(Key k : TopResultsForSingleMethod) {
+					k.setRealCol(num);
+				}
+				allTopResults = ArrayUtils.addAll(allTopResults,TopResultsForSingleMethod);
+				
+			
 			}
-			return null;
 			
 			
 		}
+		
 		
 		
 		public static boolean hasNumParameter(String methodName) {
