@@ -18,10 +18,10 @@ public class QuickSort {
 	}
 
 	
-	public Key[] getTopResults(Key[] array, int num) {
-		Key[] arr = new Key[num - 1];
-		int lastIndex = array.length;
-		arr = Arrays.copyOfRange(array, lastIndex - num, lastIndex);
+	public Key[] getResultsByGap(Key[] array, int gap, int lastIndex) {
+		//get a num of last elements by gap, which are the top results
+		Key[] arr = new Key[gap];
+		arr = Arrays.copyOfRange(array, lastIndex - gap, lastIndex);
 		return arr;
 	}
 	
