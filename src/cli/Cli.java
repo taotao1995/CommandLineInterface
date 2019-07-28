@@ -256,9 +256,9 @@ public class Cli {
 		int lastIndex = allTopResults.length;
 		Key[] finalTopResults;
 		Key[] restTopResults = allTopResults;
-		for (Key k : allTopResults) {
-			System.out.println("i hink" + k.getValue());
-		}
+//		for (Key k : allTopResults) {
+//			System.out.println("im top result" + k.getValue());
+//		}
 		System.out.println("output");
 		for (int j = 0; j < argNum; j++) {
 			finalTopResults = qs.getResultsByGap(restTopResults, TOP_RESULT_NUM, lastIndex);
@@ -271,7 +271,7 @@ public class Cli {
 
 			for (Key k1 : finalTopResults) {
 				int col = k1.getRealCol();
-				System.out.println(col);
+				//System.out.println(col);
 				int col2 = colNumList.get(j);
 				// System.out.println(colNumList.get(j));
 				for (Key k2 : allResults) {
@@ -281,8 +281,8 @@ public class Cli {
 
 						System.out.println("- row: " + k1.getRow());
 						System.out.println("  column: " + k1.getColumn());
-						System.out.println("  data: " + " eh" + k1.getRealCol() + "=" + k1.getValue() + " eh" + col2
-								+ "=" + k2.getValue());
+						System.out.println("  data: " + " eh" + col2
+								+ "=" + k2.getValue() + " eh" + k1.getRealCol() + "=" + k1.getValue());
 					}
 				}
 
